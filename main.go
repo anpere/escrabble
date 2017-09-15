@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"strings"
+  "sort"
 )
 
 type Tree struct {
@@ -33,8 +34,10 @@ func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
 	for _, line := range lines {
 		word := strings.ToLower(strings.Split(line, "/")[0])
 		for i := 0; i < len(word); i++ {
-
-			dict_frequencies[string(word[i])] += 1
+      char := string(word[i])
+      if (!strings.ContainsAny(char, "0123456789\t\n\r'") && char!="") {
+        dict_frequencies[string(word[i])] += 1
+      }
 		}
 	}
 	return dict_frequencies
@@ -60,6 +63,7 @@ func generate_hamming_code(corpus string) Tree {
 
 	frequency_map := get_dictionary_frequencies(corpus)
 	// Go through the frequencies and generate the hamming
+
 	for char, freq := range frequency_map {
 		fmt.Println("character:", char, "frequency", freq)
 	}
@@ -91,6 +95,7 @@ func find_two_mins(trees []Tree) (Tree, Tree) {
 			smallest_tree = tree
 		}
 	}
+  fmt.Println(smallest_tree, small_tree)
 	return smallest_tree, small_tree
 }
 func tree_union(left Tree, right Tree) Tree {
@@ -144,15 +149,22 @@ func (t *Tree) GetCodes() map[string]string {
 	}
 	return codes
 }
+
 func main() {
 	corpus_file := os.Args[1]
 	corpus := get_corpus(corpus_file)
 	hamming_code := generate_hamming_code(corpus)
 	codes := hamming_code.GetCodes()
-	for word, code := range codes {
-		fmt.Println("Word: ", word, "Code: ", code)
+
+  var keys []string
+  for k := range codes {
+    keys = append(keys, k)
+  }
+  sort.Strings(keys)
+	for _, word := range keys {
+		fmt.Println("Word: ", word, "Code: ", codes[word])
 	}
-	fmt.Println(hamming_code)
+
 	fmt.Println("Hello, 世界")
 
 }
