@@ -35,7 +35,7 @@ func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
 		word := strings.ToLower(strings.Split(line, "/")[0])
 		for _, w_c := range word {
       char := string(w_c)
-      if (!strings.ContainsAny(char, "0123456789\t\n\r'") && len(char)>0) {
+      if (!strings.ContainsAny(char, "0123456789") && len(char)>0) {
         dict_frequencies[char] += 1
       }
 		}
@@ -139,21 +139,15 @@ func (t *Tree) GetCodes() map[string]string {
 	if t.left == nil || t.right == nil {
 		return map[string]string{t.key: ""}
 	}
-  if t.key == "" {
-    fmt.Println("LEAF HAS EMPTY VALUE!", t.left, t.right, t.key,)
-  }
 	l_codes := t.left.GetCodes()
 	r_codes := t.right.GetCodes()
 	codes := make(map[string]string)
 	for l_k, l_v := range l_codes {
-		codes[l_k] = "0 " + l_v
+		codes[l_k] = "0" + l_v
 	}
 	for r_k, r_v := range r_codes {
-		codes[r_k] = "1 " + r_v
+		codes[r_k] = "1" + r_v
 	}
-  if _, ok := codes[""]; ok{
-    fmt.Println("UH-OH big problem")
-  }
   delete(codes, "")
 	return codes
 }
@@ -164,20 +158,12 @@ func main() {
 	hamming_code := generate_hamming_code(corpus)
 	codes := hamming_code.GetCodes()
 
-  fmt.Println(codes)
-  fmt.Println(codes[""])
   var keys []string
   for k := range codes {
     keys = append(keys, k)
   }
   sort.Strings(keys)
-	for _, word := range keys {
-		fmt.Println("Word: ", word, "Code: ", codes[word])
-    fmt.Println("UTF-8 value: ")
-    fmt.Printf("%+q", word)
-    fmt.Printf("\n")
+	for _, w := range keys {
+		fmt.Println("Word: ", w, "Code: ", codes[w], " Length: ", len(codes[w]))
 	}
-
-	fmt.Println("Hello, 世界")
-
 }
