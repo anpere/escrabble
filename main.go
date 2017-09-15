@@ -33,10 +33,10 @@ func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
 	lines := strings.Split(dictionary_corpus, "\n")
 	for _, line := range lines {
 		word := strings.ToLower(strings.Split(line, "/")[0])
-		for i := 0; i < len(word); i++ {
-      char := string(word[i])
+		for _, w_c := range word {
+      char := string(w_c)
       if (!strings.ContainsAny(char, "0123456789\t\n\r'") && char!="") {
-        dict_frequencies[string(word[i])] += 1
+        dict_frequencies[char] += 1
       }
 		}
 	}
