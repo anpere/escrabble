@@ -20,11 +20,12 @@ type Tree struct {
 type Forest struct {
 	trees []Tree
 }
+var IGNORE string = "àçèò0123456789-­­­­',.øÆ"
 
 /**
   * Given a dictionary body, generate the frequencies of each character
-  * @param dictionary_corpus: a strong representing phrases in a dictionary
-                              each word is on its own line
+  * @param dictionary_corpus: a string representing phrases in a dictionary
+                              each phrase is on its own line
                               phrase declarations end with slashes or a newline
 */
 func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
@@ -35,7 +36,7 @@ func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
 		word := strings.ToLower(strings.Split(line, "/")[0])
 		for _, w_c := range word {
       char := string(w_c)
-      if (!strings.ContainsAny(char, "0123456789") && len(char)>0) {
+      if (!strings.ContainsAny(char, IGNORE) && len(char)>0) {
         dict_frequencies[char] += 1
       }
 		}
@@ -80,8 +81,8 @@ func generate_ham_tree(trees []Tree) Tree {
 		// Find the smallest trees
 		smaller, small := find_two_mins(trees)
 		// Coalesce the tiny trees
-		new_tree := tree_union(smaller, small)                   // this is a new tree
-		rest := forest_difference(trees, []Tree{smaller, small}) // remove 2 leaves
+		new_tree := tree_union(smaller, small)  // this is a new tree
+		rest := forest_difference(trees, []Tree{smaller, small})  // remove 2 leaves
 		return generate_ham_tree(append(rest, new_tree))
 	}
 }
