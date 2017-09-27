@@ -20,8 +20,24 @@ type Tree struct {
 type Forest struct {
 	trees []Tree
 }
-var IGNORE string = "àçèò0123456789-­­­­',.øÆ"
-
+var IGNORE string = "àçèò0123456789-­­­­',.() "
+var ACCENTS string = "áéïóú"
+var TOO_RARE string = "wüïkyzx" + ACCENTS
+func handle_accents(char string) string {
+  if (char == "á") {
+    return "a"
+  } else if (char == "é") {
+    return "e"
+  } else if (char == "í") {
+    return "i"
+  } else if (char == "ó") {
+    return "o"
+  } else if (char == "ú") {
+    return "u"
+  } else {
+    return char
+  }
+}
 /**
   * Given a dictionary body, generate the frequencies of each character
   * @param dictionary_corpus: a string representing phrases in a dictionary
@@ -31,12 +47,13 @@ var IGNORE string = "àçèò0123456789-­­­­',.øÆ"
 func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
 	dict_frequencies := make(map[string]int)
 
+  // Split the corpus into lines, and get the phrase in the beginning.
 	lines := strings.Split(dictionary_corpus, "\n")
 	for _, line := range lines {
 		word := strings.ToLower(strings.Split(line, "/")[0])
 		for _, w_c := range word {
       char := string(w_c)
-      if (!strings.ContainsAny(char, IGNORE) && len(char)>0) {
+      if (!strings.ContainsAny(char, IGNORE) && len(char) > 0) {
         dict_frequencies[char] += 1
       }
 		}
@@ -64,10 +81,6 @@ func generate_hamming_code(corpus string) Tree {
 
 	frequency_map := get_dictionary_frequencies(corpus)
 	// Go through the frequencies and generate the hamming
-
-	for char, freq := range frequency_map {
-		fmt.Println("character:", char, "frequency", freq)
-	}
 	tree_freqs := generate_forest(frequency_map)
 	ham_tree := generate_ham_tree(tree_freqs)
 	return ham_tree
@@ -96,7 +109,6 @@ func find_two_mins(trees []Tree) (Tree, Tree) {
 			smallest_tree = tree
 		}
 	}
-  fmt.Println(smallest_tree, small_tree)
 	return smallest_tree, small_tree
 }
 func tree_union(left Tree, right Tree) Tree {
@@ -132,7 +144,6 @@ func generate_forest(weight_maps map[string]int) []Tree {
 		}
 		forest = append(forest, leaf)
 	}
-  fmt.Println(forest)
 	return forest
 }
 
@@ -157,6 +168,21 @@ func main() {
 	corpus_file := os.Args[1]
 	corpus := get_corpus(corpus_file)
 	hamming_code := generate_hamming_code(corpus)
+  frequencies := get_dictionary_frequencies(corpus)
+  var min int = math.MaxInt64
+  for char, freq := range frequencies {
+    if strings.ContainsAny(char, TOO_RARE) {
+      continue
+    }
+    if freq < min {
+      min = freq
+    }
+  }
+  character_count := make(map[string]int)
+  for char, freq := range frequencies {
+    character_count[char] = 12 * freq / 85080
+  }
+  //fmt.Println(character_count)
 	codes := hamming_code.GetCodes()
 
   var keys []string
@@ -165,6 +191,6 @@ func main() {
   }
   sort.Strings(keys)
 	for _, w := range keys {
-		fmt.Println("Word: ", w, "Code: ", codes[w], " Length: ", len(codes[w]))
+		fmt.Println(w,":",len(codes[w]))
 	}
 }
