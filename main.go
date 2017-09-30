@@ -21,7 +21,7 @@ type Tree struct {
 type Forest struct {
 	trees []Tree
 }
-var IGNORE string = "àçèò0123456789-­­­­',.() "
+var IGNORE string = "kwàçèò0123456789-­­­­',.() "
 var ACCENTS string = "áéïóú"
 var TOO_RARE string = "wüïkyzx" + ACCENTS
 
@@ -34,11 +34,11 @@ func handle_accents(char string) string {
     return "a"
   } else if (char == "é") {
     return "e"
-  } else if (char == "í") {
+  } else if (char == "í" || char == "ï") {
     return "i"
   } else if (char == "ó") {
     return "o"
-  } else if (char == "ú") {
+  } else if (char == "ú" || char == "ü") {
     return "u"
   } else {
     return char
@@ -60,7 +60,7 @@ func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
 		for _, w_c := range word {
       char := string(w_c)
       if (!strings.ContainsAny(char, IGNORE) && len(char) > 0) {
-        dict_frequencies[char] += 1
+        dict_frequencies[handle_accents(char)] += 1
       }
 		}
 	}
@@ -184,7 +184,7 @@ func gen_piece_count(mode string) {
     piece_count = map[string]int{
       "A":12, "E" :12, "O" :9, "I" :6, "S" :6, "N" :5, "R" :5,"U" :5, "L" :4,
       "T" :4,"D" :5,"G" :2, "C" :4,"B" :2,"M" :2,"P" :2,"H" :2,"F" :1,"V" :1,
-      "Y" :1,"CH" :1,"Q" :1,"J" :1,"LL" :1,"Ñ" :1,"RR" :1,"X" :1,
+      "Y" :1,"CH" :1,"Q" :1,"J" :1,"LL" :1,"Ñ" :1,"RR" :1,"X" :1, "Z":1,
     }
   } else if mode=="EN" {
     piece_count   = map[string]int{

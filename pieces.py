@@ -6,43 +6,45 @@ black = (0, 0, 0)
 class Board(object):
     filename = "board.png"
 
-    def gen_piece_generator(self, piece_count, piece_map):
-        for character, count in piece_count.items():
-            for i in range(count):
-                yield Piece(character, piece_map[character])
+    @property
+    def pieces(self):
+        characters = sorted(self.piece_points.keys())
+        for character in characters:
+            print(character)
+            for i in range(self.piece_count[character]):
+                yield Piece(character, self.piece_points[character])
 
     def getNextPiece(self):
-        return self.piece_generator.__next__()
+        return next(self.pieces)
 
-    def __init__(self, piece_map, piece_count, width, height):
-        self.pieces = []
-        self.width = width
-        self.height = height
-        self.piece_generator = self.gen_piece_generator(piece_count, piece_map)
-
-    def draw(self, surface):
-        for piece in self.pieces:
-            piece.draw(surface)
+    def __init__(self, piece_points, piece_count, width, height):
+        self.width = int(width)
+        self.height = int(height)
+        self.piece_points = piece_points
+        self.piece_count = piece_count
 
     def gen_board(self):
-        self.pieces = []
-        num_pieces = 0
-        self.pieces = []
         rows = int(self.height / Piece.height)
         cols = int(self.width / Piece.width)
+        print("generating board {} by {}".format(rows, cols))
+        surface = gizeh.Surface(width=self.width, height=self.height)
+        fichas = list(self.pieces)
+        print("pieces: {}".format([piece.character for piece in fichas]))
+        i = 0
         for col in range(cols):
             for row in range(rows):
                 try:
-                    piece = self.getNextPiece()
+                    piece = fichas[i]
+                    i+=1
                     piece.set_draw_properties(
-                        xy=[piece.height/2 + col*piece.height, piece.width/2 + row*piece.width],
+                        xy=[piece.width/2 + col*piece.width, piece.height/2 + row*piece.height],
                         )
-                    self.pieces.append(piece)
-                except:
+                    print("Drawing {}".format(piece.character))
+                    piece.draw(surface)
+                except Exception as e:
+                    print("ran out of pieces")
                     break
 
-        surface = gizeh.Surface(width=int(cols*Piece.width), height=int(rows*Piece.height))
-        self.draw(surface)
         surface.get_npimage()
         surface.write_to_png(self.filename)
         print("did the generation")
@@ -124,33 +126,24 @@ def get_pieces(file_name):
     return piece_map
 
 if __name__ == "__main__":
+    print("pieces.py...")
     if True:
         piece_map = get_pieces("piece_value.txt")
         piece_count = get_pieces("piece_count.txt")
     else:
-        piece_map = {
-            "a":"10",
-            "b":"8",
-            "c":"4",
-        }
-        piece_count = {
-            "a":4,
-            "b":3,
-            "c":1,
-        }
+        piece_map = {"a":"10","b":"8","c":"4",}
+        piece_count = {"a":4,"b":3,"c":1,}
+
+    print("pieces: {}".format(piece_count))
     num_pieces = 0
     for piece, count in piece_count.items():
         num_pieces += count
-
     rows, cols = pq(num_pieces)
-    # board.gen_board()
+    if rows == 1:
+        # prime numbers, fuck that shit.
+        rows,cols = pq(num_pieces+3)
+    print("Num pieces {} generating board {} rows by {} columns".format(num_pieces, rows, cols))
 
-    a = Piece("a", piece_map["a"], xy=[Piece.width*.5, Piece.height*.5])
-    Ñ = Piece("Ñ", piece_map["ñ"], xy=[Piece.width*.5, Piece.height*.5])
-    surface = gizeh.Surface(width=a.width, height=a.height)
-    Ñ.draw(surface)
-    surface.get_npimage()
-    surface.write_to_png("piece.png")
 
-    board = Board(piece_map, piece_count, width=Piece.width*rows, height=Piece.height*cols)
+    board = Board(piece_map, piece_count, width=Piece.width*cols, height=Piece.height*rows)
     board.gen_board()
