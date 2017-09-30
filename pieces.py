@@ -28,22 +28,15 @@ class Board(object):
         cols = int(self.width / Piece.width)
         print("generating board {} by {}".format(rows, cols))
         surface = gizeh.Surface(width=self.width, height=self.height)
-        fichas = list(self.pieces)
-        print("pieces: {}".format([piece.character for piece in fichas]))
         i = 0
-        for col in range(cols):
-            for row in range(rows):
-                try:
-                    piece = fichas[i]
-                    i+=1
-                    piece.set_draw_properties(
-                        xy=[piece.width/2 + col*piece.width, piece.height/2 + row*piece.height],
-                        )
-                    print("Drawing {}".format(piece.character))
-                    piece.draw(surface)
-                except Exception as e:
-                    print("ran out of pieces")
-                    break
+        for piece in self.pieces:
+            row = int(i/cols)
+            col = i%cols
+            piece.set_draw_properties(
+                xy=[piece.width/2 + col*piece.width, piece.height/2 + row*piece.height],
+            )
+            piece.draw(surface)
+            i+=1
 
         surface.get_npimage()
         surface.write_to_png(self.filename)
@@ -55,7 +48,7 @@ class Piece(object):
     fontfamily="Impact"
     letterColor=black
     rectangleColor=white
-    height=60
+    height=200
     width=height
     lettersize=height/3
     numbersize=lettersize/3
