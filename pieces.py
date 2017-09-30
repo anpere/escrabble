@@ -53,7 +53,7 @@ class Piece(object):
     fontfamily="Impact"
     letterColor=black
     rectangleColor=white
-    height=500
+    height=50
     width=height
     lettersize=height/3
     numbersize=lettersize/3

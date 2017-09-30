@@ -172,8 +172,60 @@ func check(e error) {
   }
 }
 
+func gen_piece_count(mode string) {
+  var piece_count map[string]int
+  var msg string
+  if mode=="ES" {
+    piece_count = map[string]int{
+      "A":12, "E" :12, "O" :9, "I" :6, "S" :6, "N" :5, "R" :5,"U" :5, "L" :4,
+      "T" :4,"D" :5,"G" :2, "C" :4,"B" :2,"M" :2,"P" :2,"H" :2,"F" :1,"V" :1,
+      "Y" :1,"CH" :1,"Q" :1,"J" :1,"LL" :1,"Ñ" :1,"RR" :1,"X" :1,
+    }
+  } else if mode=="EN" {
+    piece_count   = map[string]int{
+      "a":9,
+"b":2,
+"c":2,
+"d":4,
+"e":12,
+"f":2,
+"g":3,
+"h":2,
+"i":9,
+"j":1,
+"k":1,
+"l":4,
+"m":2,
+"n":6,
+"o":8,
+"p":2,
+"q":1,
+"r":6,
+"s":4,
+"t":6,
+"u":4,
+"v":2,
+"w":2,
+"x":1,
+"y":2,
+"z":1,
+    }
+  }
+  for letter, count := range piece_count {
+    msg += (strings.ToLower(letter) + ":" + strconv.Itoa(count)+"\n")
+  }
+  err := ioutil.WriteFile("piece_count.txt", []byte(msg), 0644)
+  check(err)
+}
 func main() {
 	corpus_file := os.Args[1]
+  var mode string
+  if strings.Contains(corpus_file, "Spanish"){
+      mode = "ES"
+  } else {
+    mode = "EN"
+  }
+
 	corpus := get_corpus(corpus_file)
 	hamming_code := generate_hamming_code(corpus)
   frequencies := get_dictionary_frequencies(corpus)
@@ -204,6 +256,9 @@ func main() {
 		fmt.Println(w,":",len(codes[w]))
 	}
 
+  gen_piece_count(mode)
+
   err := ioutil.WriteFile("piece_value.txt", []byte(msg), 0644)
+
   check(err)
 }
