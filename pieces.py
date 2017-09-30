@@ -53,7 +53,7 @@ class Piece(object):
     fontfamily="Impact"
     letterColor=black
     rectangleColor=white
-    height=50
+    height=60
     width=height
     lettersize=height/3
     numbersize=lettersize/3
@@ -146,10 +146,11 @@ if __name__ == "__main__":
     # board.gen_board()
 
     a = Piece("a", piece_map["a"], xy=[Piece.width*.5, Piece.height*.5])
+    Ñ = Piece("Ñ", piece_map["ñ"], xy=[Piece.width*.5, Piece.height*.5])
     surface = gizeh.Surface(width=a.width, height=a.height)
-    a.draw(surface)
+    Ñ.draw(surface)
     surface.get_npimage()
-    surface.write_to_png("a.png")
+    surface.write_to_png("piece.png")
 
     board = Board(piece_map, piece_count, width=Piece.width*rows, height=Piece.height*cols)
     board.gen_board()
