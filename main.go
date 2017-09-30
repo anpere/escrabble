@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
   "sort"
+  "strconv"
 )
 
 type Tree struct {
@@ -164,6 +165,13 @@ func (t *Tree) GetCodes() map[string]string {
 	return codes
 }
 
+
+func check(e error) {
+  if e != nil {
+      panic(e)
+  }
+}
+
 func main() {
 	corpus_file := os.Args[1]
 	corpus := get_corpus(corpus_file)
@@ -190,7 +198,12 @@ func main() {
     keys = append(keys, k)
   }
   sort.Strings(keys)
+  var msg = ""
 	for _, w := range keys {
+    msg += (string(w) + ":" + strconv.Itoa(len(codes[w])) + "\n")
 		fmt.Println(w,":",len(codes[w]))
 	}
+
+  err := ioutil.WriteFile("piece_value.txt", []byte(msg), 0644)
+  check(err)
 }
