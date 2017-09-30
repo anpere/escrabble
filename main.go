@@ -24,7 +24,12 @@ type Forest struct {
 var IGNORE string = "àçèò0123456789-­­­­',.() "
 var ACCENTS string = "áéïóú"
 var TOO_RARE string = "wüïkyzx" + ACCENTS
+
+var HANDLE_ACCENTS bool = true
 func handle_accents(char string) string {
+  if !HANDLE_ACCENTS {
+    return char
+  }
   if (char == "á") {
     return "a"
   } else if (char == "é") {
@@ -183,32 +188,9 @@ func gen_piece_count(mode string) {
     }
   } else if mode=="EN" {
     piece_count   = map[string]int{
-      "a":9,
-"b":2,
-"c":2,
-"d":4,
-"e":12,
-"f":2,
-"g":3,
-"h":2,
-"i":9,
-"j":1,
-"k":1,
-"l":4,
-"m":2,
-"n":6,
-"o":8,
-"p":2,
-"q":1,
-"r":6,
-"s":4,
-"t":6,
-"u":4,
-"v":2,
-"w":2,
-"x":1,
-"y":2,
-"z":1,
+      "a":9,"b":2,"c":2,"d":4,"e":12,"f":2,"g":3,"h":2,"i":9,"j":1,"k":1,"l":4,
+      "m":2,"n":6,"o":8,"p":2,"q":1,"r":6,"s":4,"t":6,"u":4,"v":2,"w":2,"x":1,
+      "y":2,"z":1,
     }
   }
   for letter, count := range piece_count {

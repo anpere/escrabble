@@ -4,12 +4,12 @@ import gizeh
 white = (1, 1, 1)
 black = (0, 0, 0)
 class Board(object):
-    filename = "genBoard1.png"
+    filename = "board.png"
 
-    def gen_piece_generator(self, piece_count):
+    def gen_piece_generator(self, piece_count, piece_map):
         for character, count in piece_count.items():
             for i in range(count):
-                yield Piece(character, count)
+                yield Piece(character, piece_map[character])
 
     def getNextPiece(self):
         return self.piece_generator.__next__()
@@ -18,7 +18,7 @@ class Board(object):
         self.pieces = []
         self.width = width
         self.height = height
-        self.piece_generator = self.gen_piece_generator(piece_count)
+        self.piece_generator = self.gen_piece_generator(piece_count, piece_map)
 
     def draw(self, surface):
         for piece in self.pieces:
@@ -124,8 +124,6 @@ def get_pieces(file_name):
     return piece_map
 
 if __name__ == "__main__":
-    pieces = get_pieces("pieces.json")
-
     if True:
         piece_map = get_pieces("piece_value.txt")
         piece_count = get_pieces("piece_count.txt")
@@ -147,7 +145,7 @@ if __name__ == "__main__":
     rows, cols = pq(num_pieces)
     # board.gen_board()
 
-    a = Piece("a", "1", xy=[Piece.width*.5, Piece.height*.5])
+    a = Piece("a", piece_map["a"], xy=[Piece.width*.5, Piece.height*.5])
     surface = gizeh.Surface(width=a.width, height=a.height)
     a.draw(surface)
     surface.get_npimage()
