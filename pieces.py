@@ -93,7 +93,7 @@ class Piece(object):
             fontfamily=self.fontfamily,
             fontsize=self.lettersize,
             fill=self.letterColor,
-            xy=(self.xy[0]+self.width*.1, self.xy[1]+self.height*.15),
+            xy=(self.xy[0], self.xy[1]),
             )
         value = gizeh.text(
             str(self.value),
