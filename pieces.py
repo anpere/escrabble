@@ -1,7 +1,8 @@
 
 import gizeh
 
-
+white = (1, 1, 1)
+black = (0, 0, 0)
 class Board(object):
     filename = "genBoard1.png"
 
@@ -29,12 +30,12 @@ class Board(object):
         self.pieces = []
         rows = int(self.height / Piece.height)
         cols = int(self.width / Piece.width)
-        for row in range(rows):
-            for col in range(cols):
+        for col in range(cols):
+            for row in range(rows):
                 try:
                     piece = self.getNextPiece()
                     piece.set_draw_properties(
-                        xy=[row*piece.width, col*piece.height],
+                        xy=[piece.height/2 + col*piece.height, piece.width/2 + row*piece.width],
                         )
                     self.pieces.append(piece)
                 except:
@@ -50,12 +51,12 @@ class Board(object):
 class Piece(object):
 
     fontfamily="Impact"
-    letterColor=(0,0,1)
-    rectangleColor=(0,1,1)
+    letterColor=black
+    rectangleColor=white
     height=500
     width=height
     lettersize=height/3
-    numbersize=lettersize/4
+    numbersize=lettersize/3
 
     def __init__(
         self,
@@ -80,12 +81,12 @@ class Piece(object):
             lx=self.height,
             ly=self.height,
             xy=self.xy,
-            fill=(1,0,1)
+            fill=black
         )
         inner = gizeh.rectangle(
-            lx=self.width*.9,
-            ly=self.height*.9,
-            xy=[self.xy[0], self.xy[1]],
+            lx=self.width*.95,
+            ly=self.height*.95,
+            xy=self.xy,
             fill=self.rectangleColor,
         )
         letter = gizeh.text(
@@ -110,6 +111,7 @@ def pq(num):
     factors = [divisor for divisor in range(1, num) if num%divisor ==0]
     p = factors[int(len(factors)/2)]
     return p, num/p
+
 def get_pieces(file_name):
     """
     File name of the piece data
