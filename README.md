@@ -24,3 +24,7 @@ go build main.go
 ./main.go {dic_file_name}
 python3 pieces.py
 ```
+
+## Purpose
+This prints out a png meant to be printed, laser-cut and created into
+actual scrabble pieces

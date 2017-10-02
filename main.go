@@ -21,11 +21,11 @@ type Tree struct {
 type Forest struct {
 	trees []Tree
 }
-var IGNORE string = "kwàçèò0123456789-­­­­',.() "
+var IGNORE string = "ïkwàçèò0123456789-­­­­',.() "
 var ACCENTS string = "áéïóú"
 var TOO_RARE string = "wüïkyzx" + ACCENTS
 
-var HANDLE_ACCENTS bool = true
+var HANDLE_ACCENTS bool = false
 func handle_accents(char string) string {
   if !HANDLE_ACCENTS {
     return char
@@ -45,21 +45,30 @@ func handle_accents(char string) string {
   }
 }
 /**
-  * Given a dictionary body, generate the frequencies of each character
+  * Given a Spanish dictionary body, generate the frequencies of each character
   * @param dictionary_corpus: a string representing phrases in a dictionary
                               each phrase is on its own line
                               phrase declarations end with slashes or a newline
 */
 func get_dictionary_frequencies(dictionary_corpus string) map[string]int {
 	dict_frequencies := make(map[string]int)
-
   // Split the corpus into lines, and get the phrase in the beginning.
 	lines := strings.Split(dictionary_corpus, "\n")
+  var prev_char string = "";
 	for _, line := range lines {
 		word := strings.ToLower(strings.Split(line, "/")[0])
 		for _, w_c := range word {
       char := string(w_c)
       if (!strings.ContainsAny(char, IGNORE) && len(char) > 0) {
+        if (prev_char=="l" || prev_char=="r" ) && prev_char == char {
+          dict_frequencies[char+char] += 1
+          fmt.Println(char+char)
+          dict_frequencies[char] -= 1 // let's not count the previous instance
+        } else if (prev_char == "c") && (char == "h") {
+          dict_frequencies["ch"] += 1
+          dict_frequencies["c"] -= 1
+        }
+        prev_char = char
         dict_frequencies[handle_accents(char)] += 1
       }
 		}
@@ -182,9 +191,10 @@ func gen_piece_count(mode string) {
   var msg string
   if mode=="ES" {
     piece_count = map[string]int{
-      "A":12, "E" :12, "O" :9, "I" :6, "S" :6, "N" :5, "R" :5,"U" :5, "L" :4,
-      "T" :4,"D" :5,"G" :2, "C" :4,"B" :2,"M" :2,"P" :2,"H" :2,"F" :1,"V" :1,
-      "Y" :1,"CH" :1,"Q" :1,"J" :1,"LL" :1,"Ñ" :1,"RR" :1,"X" :1, "Z":1,
+      "A":12, "E" :12, "O" :9, "I" :6, "S" :12, "N" :10, "R" :10,"U" :10, "L" :8,
+      "T" :8,"D" :10,"G" :4, "C" :8,"B" :4,"M" :4,"P" :4,"H" :4,"F" :2,"V" :2,
+      "Y" :2,"CH" :2,"Q" :2,"J" :2,"LL" :2,"Ñ" :2,"RR" :2,"X" :2, "Z":2,
+      "á":12 , "é":12 , "ó":9, "ü":2, "ú":5, "í":6,
     }
   } else if mode=="EN" {
     piece_count   = map[string]int{
