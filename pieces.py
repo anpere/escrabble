@@ -1,8 +1,41 @@
 
 import gizeh
+import cairocffi as cairo
+import numpy
 
 white = (1, 1, 1)
 black = (0, 0, 0)
+
+class Apl(object):
+    def __init__(
+        self,
+        sizex,
+        sizey,
+        **kwargs
+    ):
+        # load png and convert to numpy array
+
+        image_surface = cairo.ImageSurface.create_from_png("logo.png")
+        im = 0+numpy.frombuffer(image_surface.get_data(), numpy.uint8)
+        im.shape = (image_surface.get_height(), image_surface.get_width(), 4)
+        im = im[:,:,[2,1,0,3]] # put RGB back in order
+        gizeh_pattern = gizeh.ImagePattern(im)
+        self.height = im.shape[0]
+        self.width = im.shape[1]
+        gizeh_pattern.scale(rx=sizex, ry=sizey)
+        self.scalex = sizex
+        self.scaley = sizey
+        self.im = im
+        self.gizeh_pattern = gizeh_pattern
+        for key, value in kwargs.items():
+            self.__setattr__(key, value)
+
+    def draw(self, surface):
+
+        r = gizeh.rectangle(lx=self.width*10, ly=self.height*10, xy=self.xy, fill=self.gizeh_pattern)
+        r.scale(rx=self.scalex, ry=self.scaley)
+        r.draw(surface)
+
 class Board(object):
     filename = "board.png"
 
@@ -28,19 +61,28 @@ class Board(object):
         cols = int(self.width / Piece.width)
         print("generating board {} by {}".format(rows, cols))
         surface = gizeh.Surface(width=self.width, height=self.height)
+        back_surface = gizeh.Surface(width=self.width, height=self.height)
         i = 0
         for piece in self.pieces:
             row = int(i/cols)
             col = i%cols
+            x_y=[piece.width/2 + col*piece.width, piece.height/2 + row*piece.height]
             piece.set_draw_properties(
-                xy=[piece.width/2 + col*piece.width, piece.height/2 + row*piece.height],
+                xy=x_y,
             )
             piece.draw(surface)
             i+=1
-
+        for row in range(rows+1):
+            for col in range(cols+1):
+                tiny_logo = Apl(2,2)
+                tiny_logo.xy = [tiny_logo.width * row, tiny_logo.height  * col]
+                tiny_logo.draw(back_surface)
         surface.get_npimage()
         surface.write_to_png(self.filename)
+        back_surface.get_npimage()
+        back_surface.write_to_png("back_board.png")
         print("did the generation")
+
 
 
 class Piece(object):
@@ -140,3 +182,6 @@ if __name__ == "__main__":
 
     board = Board(piece_map, piece_count, width=Piece.width*cols, height=Piece.height*rows)
     board.gen_board()
+    logo = Apl(1,4,xy=(0,0))
+    surface = gizeh.Surface(logo.width, logo.height,  bg_color=(0, 0.0, 0.0))
+    logo.draw(surface)
