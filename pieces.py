@@ -5,7 +5,7 @@ import numpy
 
 white = (1, 1, 1)
 black = (0, 0, 0)
-
+red   = (1, 0, 0)
 class Apl(object):
     def __init__(
         self,
@@ -73,7 +73,7 @@ class Board(object):
             piece.draw(surface)
             i+=1
         for row in range(rows+1):
-            for col in range(cols+1):
+            for col in range(2*cols+1):
                 tiny_logo = Apl(2,2)
                 tiny_logo.xy = [tiny_logo.width * row, tiny_logo.height  * col]
                 tiny_logo.draw(back_surface)
@@ -118,7 +118,7 @@ class Piece(object):
             lx=self.height,
             ly=self.height,
             xy=self.xy,
-            fill=black
+            fill=red
         )
         inner = gizeh.rectangle(
             lx=self.width*.95,
