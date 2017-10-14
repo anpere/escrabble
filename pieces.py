@@ -77,6 +77,26 @@ class Board(object):
                 tiny_logo = Apl(2,2)
                 tiny_logo.xy = [tiny_logo.width * row, tiny_logo.height  * col]
                 tiny_logo.draw(back_surface)
+        for row in range(rows):
+            line = gizeh.polyline(
+                points = [
+                    (0,row*Piece.height),
+                    (cols*Piece.width, row*Piece.height),
+                ],
+                stroke = red,
+                stroke_width = 2,
+                )
+            line.draw(surface)
+        for col in range(cols):
+            line = gizeh.polyline(
+                points = [
+                    (col*Piece.width, 0),
+                    (col*Piece.width, rows*Piece.height),
+                ],
+                stroke = red,
+                stroke_width = 2,
+            )
+            line.draw(surface)
         surface.get_npimage()
         surface.write_to_png(self.filename)
         back_surface.get_npimage()
@@ -92,8 +112,8 @@ class Piece(object):
     rectangleColor=white
     height=200
     width=height
-    lettersize=height/3
-    numbersize=lettersize/3
+    lettersize=6*height/12
+    numbersize=5*lettersize/12
 
     def __init__(
         self,
@@ -114,18 +134,6 @@ class Piece(object):
         """
         Draws a piece onto a surface
         """
-        border = gizeh.rectangle(
-            lx=self.height,
-            ly=self.height,
-            xy=self.xy,
-            fill=red
-        )
-        inner = gizeh.rectangle(
-            lx=self.width*.95,
-            ly=self.height*.95,
-            xy=self.xy,
-            fill=self.rectangleColor,
-        )
         letter = gizeh.text(
             self.character,
             fontfamily=self.fontfamily,
@@ -140,7 +148,7 @@ class Piece(object):
             fill=self.letterColor,
             xy=(self.xy[0]+self.width*.4, self.xy[1]+self.height*.4),
         )
-        figures = [border, inner, letter, value]
+        figures = [letter, value]
         for figure in figures:
             figure.draw(surface)
 
